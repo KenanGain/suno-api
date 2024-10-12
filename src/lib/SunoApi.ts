@@ -242,27 +242,35 @@ class SunoApi {
         await sleep(3, 6);
         await this.keepAlive(true);
       }
+      console.log(response)
       return lastResponse;
-    } else {
-      await this.keepAlive(true);
-      return response.data['clips'].map((audio: any) => ({
-        id: audio.id,
-        title: audio.title,
-        image_url: audio.image_url,
-        lyric: audio.metadata.prompt,
-        audio_url: audio.audio_url,
-        video_url: audio.video_url,
-        created_at: audio.created_at,
-        model_name: audio.model_name,
-        status: audio.status,
-        gpt_description_prompt: audio.metadata.gpt_description_prompt,
-        prompt: audio.metadata.prompt,
-        type: audio.metadata.type,
-        tags: audio.metadata.tags,
-        duration: audio.metadata.duration,
-      }));
-    }
-  }
+  
+} else {
+  await this.keepAlive(true);
+
+  // Generate the `image_url` dynamically using the `id`
+  return response.data['clips'].map((audio: any) => {
+    const generatedImageUrl = `https://cdn2.suno.ai/image_${audio.id}.jpeg`; // Construct image URL
+    console.log("Audio Object:", audio); // Log each audio object
+    return {
+      id: audio.id,
+      title: audio.title || 'No title available',
+      image_url: generatedImageUrl, 
+      lyric: audio.metadata.prompt,
+      audio_url: audio.audio_url,
+      video_url: audio.video_url,
+      created_at: audio.created_at,
+      model_name: audio.model_name,
+      status: audio.status,
+      gpt_description_prompt: audio.metadata.gpt_description_prompt,
+      prompt: audio.metadata.prompt,
+      type: audio.metadata.type,
+      tags: audio.metadata.tags,
+      duration: audio.metadata.duration,
+    };
+  });
+}
+}
 
   /**
    * Generates lyrics based on a given prompt.
